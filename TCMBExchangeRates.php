@@ -5,7 +5,7 @@
  * Bu sınıf, Türkiye Cumhuriyet Merkez Bankası'ndan güncel döviz kurlarını çeker.
  * 
  * @author Claude
- * @version 1.0
+ * @version 1.1
  */
 class TCMBExchangeRates {
     /**
@@ -133,6 +133,8 @@ class TCMBExchangeRates {
                 'banknote_buying' => (string)$currency->BanknoteBuying,
                 'banknote_selling' => (string)$currency->BanknoteSelling,
                 'unit' => (int)$currency->Unit,
+                'cross_rate' => (string)$currency->CrossRateUSD,
+                'cross_rate_other' => (string)$currency->CrossRateOther
             ];
         }
         
@@ -235,6 +237,42 @@ class TCMBExchangeRates {
         
         $amountInTRY = $amount * $fromRate;
         return $amountInTRY / $toRate;
+    }
+    
+    /**
+     * Kurların çekildiği tarihi döndürür
+     * 
+     * @return string|null XML'deki tarih bilgisi veya bugünün tarihi
+     */
+    public function getDate() {
+        if ($this->hasError() || $this->xml === null) {
+            return null;
+        }
+        
+        // XML'den tarih bilgisini al
+        if (isset($this->xml['Date'])) {
+            return (string)$this->xml['Date'];
+        }
+        
+        // Belirtilen tarih varsa onu döndür, yoksa bugünü
+        return $this->date ?? date('d.m.Y');
+    }
+    
+    /**
+     * Belirli bir para birimi listesi için kurları döndürür
+     * 
+     * @param array $currencyCodes İstenen döviz kodları listesi (örn. ['USD', 'EUR', 'GBP'])
+     * @return array İstenen döviz kurları
+     */
+    public function getSelectedCurrencies(array $currencyCodes) {
+        $result = [];
+        foreach ($currencyCodes as $code) {
+            $currency = $this->getCurrency($code);
+            if ($currency !== null) {
+                $result[$code] = $currency;
+            }
+        }
+        return $result;
     }
 }
 ?> 
