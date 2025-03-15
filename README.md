@@ -58,6 +58,12 @@ $exchange = new TCMBExchangeRates('25-01-2023');
 $eurRates = $exchange->getCurrency('EUR');
 ```
 
+### Seçili Döviz Kurlarını Almak
+```php
+$selectedCurrencies = $exchange->getSelectedCurrencies(['USD', 'EUR', 'GBP']);
+print_r($selectedCurrencies);
+```
+
 ## Hata Kontrolü
 Sınıf içerisinde hata yönetimi sağlanmıştır. Eğer bir hata oluşursa aşağıdaki gibi kontrol edebilirsiniz:
 ```php
